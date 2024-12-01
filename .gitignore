@@ -34,3 +34,21 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+.idea/.idea.ArtNet.Unity/.idea/
+
+Assets/eDmx.ArtNet/Properties/.idea/
+
+Assets/Unity-DMX/Scenes/main.meta
+
+Assets/Unity-DMX/Scenes/main/LightingData.asset
+
+Assets/Unity-DMX/Scenes/main/LightingData.asset.meta
+
+Assets/Unity-DMX/Scenes/main/ReflectionProbe-0.exr
+
+Assets/Unity-DMX/Scenes/main/ReflectionProbe-0.exr.meta
+
+Logs/
+
+UserSettings/
