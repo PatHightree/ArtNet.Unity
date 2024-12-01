@@ -1,22 +1,44 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using System.Threading;
 
 namespace Unity_DMX.Scripts
 {
     public class Experiment : MonoBehaviour
     {
-        public short universe;
         public int fps;
         public float brightness = 0.1f;
 
         [SerializeField] DmxController controller;
-        [SerializeField] private byte[] dmxData;
+        List<DmxUniverse> universes = new List<DmxUniverse>();
         Thread dmxSender;
+
+        public class DmxUniverse
+        {
+            public short Index;
+            public byte[] DmxData;
+
+            public DmxUniverse(short index)
+            {
+                this.Index = index;
+                DmxData = new byte[512];
+            }
+
+            public void SetChannelValue(int channel, float value)
+            {
+                DmxData[channel] = (byte)Mathf.FloorToInt(Mathf.Lerp(0, 255, value));
+            }
+
+            public void Send()
+            {
+                
+            }
+        }
 
         void Start()
         {
-            dmxData = new byte[512];
-            universe = 0;
+            universes.Add(new DmxUniverse(0));
+            universes.Add(new DmxUniverse(1));
             fps = 30;
         }
 
@@ -25,19 +47,13 @@ namespace Unity_DMX.Scripts
             if (dmxSender == null)
                 SetSendingDMX(true);
 
-            // for (short u = 0; u < 1; u++)
+            foreach (DmxUniverse universe in universes)
             {
-                // universe = u;
                 for (int i = 0; i < 170; i++)
                 {
-                    SetDmxValue(i*3, Mathf.Abs(Mathf.Sin(Time.time + i))*brightness);
-                    SetDmxValue(i*3+1, Mathf.Abs(Mathf.Cos(Time.time + i))*brightness);
-                    // SetDmxValue(i*3, 0);
-                    // SetDmxValue(i*3+1, 0);
-                    
-                    // SetDmxValue(i*3+2, Mathf.Sin(Time.time * 2)+1/2*brightness);
-                    SetDmxValue(i*3+2,  Mathf.Abs(Mathf.Sin(Time.time + i)) * brightness);
-                    // SetDmxValue(i*3+2,  (Mathf.Sin(Time.time + i) +1/2)  * brightness);
+                    universe.SetChannelValue(i*3, Mathf.Abs(Mathf.Sin(Time.time + i))*brightness);
+                    universe.SetChannelValue(i*3+1, Mathf.Abs(Mathf.Cos(Time.time + i))*brightness);
+                    universe.SetChannelValue(i*3+2,  Mathf.Abs(Mathf.Sin(Time.time + i)) * brightness);
                 }
             }
         }
@@ -49,9 +65,12 @@ namespace Unity_DMX.Scripts
 
         private void Shutdown()
         {
-            for (int i = 0; i < 512; i++)
-                SetDmxValue(i, 0);
-            controller.Send(universe, dmxData);
+            foreach (DmxUniverse universe in universes)
+            {
+                for (int i = 0; i < 512; i++)
+                    universe.SetChannelValue(i, 0);
+                controller.Send(universe.Index, universe.DmxData);
+            }
             
             if (dmxSender != null)
                 dmxSender.Abort();
@@ -70,16 +89,12 @@ namespace Unity_DMX.Scripts
                 dmxSender = null;
         }
 
-        void SetDmxValue(int channel, float val)
-        {
-            dmxData[channel] = (byte)Mathf.FloorToInt(Mathf.Lerp(0, 255, val));
-        }
-
         void SendDmx()
         {
             while (true)
             {
-                controller.Send(universe, dmxData);
+                foreach (DmxUniverse universe in universes)
+                    controller.Send(universe.Index, universe.DmxData);
                 Thread.Sleep(System.Math.Max(1, 1000 / fps));
             }
         }
