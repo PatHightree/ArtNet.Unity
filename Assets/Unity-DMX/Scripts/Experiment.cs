@@ -1,10 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using System.Threading;
 using UnityEngine.Profiling;
 
 namespace Unity_DMX.Scripts
 {
-    public partial class Experiment : MonoBehaviour
+    public class Experiment : MonoBehaviour
     {
         [Range(0, 10)]
         public float Speed = 1;
@@ -13,12 +16,19 @@ namespace Unity_DMX.Scripts
         public int FPS = 30;
         [SerializeField] private DmxController controller;
 
-        private DmxMatrix matrix;
+        public List<DmxEffect> Effects;
+        private DmxEffect currentEffect;
         private Thread dmxSender;
 
         void Start()
         {
-            matrix = new DmxMatrix(16, 16);
+            if (Effects != null)
+            {
+                currentEffect = Effects.First();
+                currentEffect.Initialize(16, 16);
+            }
+            else
+                Debug.LogWarning("No effect attached to " + gameObject.name);
         }
 
         private void Update()
@@ -26,28 +36,16 @@ namespace Unity_DMX.Scripts
             if (dmxSender == null)
                 SetSendingDMX(true);
 
-            Profiler.BeginSample("Filling DmxMatrix");
-            for (int y = 0; y < matrix.Height; y++)
+            if (Effects != null) currentEffect.Step(Speed, Brightness);
+        }
+
+        private void OnValidate()
+        {
+            if (Effects.First() != currentEffect)
             {
-                for (int x = 0; x < matrix.Width; x++)
-                {
-                    // Circles red expanding, green contracting
-                    float dist = Vector2.Distance(new Vector2(x, y), new Vector2((matrix.Width-1)/2.0f, (matrix.Height-1)/2.0f));
-                    float time = Time.time * Speed;
-                    matrix.SetLedRGB(x, y, 
-                        (Mathf.Sin(time - dist))*Brightness,
-                        (Mathf.Cos(time * 0.33f + dist))*Brightness,
-                        (Mathf.Sin(time - dist))*Brightness * 0);
-                    
-                    // Twinkle effect
-                    // int ledIndex = x + y * matrix.Width;
-                    // matrix.SetLedRGB(x, y, 
-                    //     Mathf.Abs(Mathf.Sin(Time.time + ledIndex))*Brightness,
-                    //     Mathf.Abs(Mathf.Cos(Time.time + ledIndex))*Brightness,
-                    //     Mathf.Abs(Mathf.Tan(Time.time + ledIndex))*Brightness);
-                }
+                currentEffect = Effects.First();
+                currentEffect.Initialize(16, 16);
             }
-            Profiler.EndSample();
         }
 
         public void SetSendingDMX(bool b)
@@ -68,8 +66,7 @@ namespace Unity_DMX.Scripts
             while (true)
             {
                 Profiler.BeginSample("Sending Dmx");
-                foreach (DmxUniverse universe in matrix.Universes)
-                    controller.Send(universe.Index, universe.Data);
+                if (Effects != null) currentEffect.Send(controller);
                 Profiler.EndSample();
                 Thread.Sleep(System.Math.Max(1, 1000 / FPS));
             }
@@ -77,9 +74,7 @@ namespace Unity_DMX.Scripts
 
         private void OnDisable()
         {
-            matrix.Blank();
-            foreach (DmxUniverse universe in matrix.Universes)
-                controller.Send(universe.Index, universe.Data);
+            if (Effects != null) currentEffect.Blank(controller);
 
             if (dmxSender != null)
                 dmxSender.Abort();
