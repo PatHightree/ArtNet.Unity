@@ -1,45 +1,24 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Threading;
+using UnityEngine.Profiling;
 
 namespace Unity_DMX.Scripts
 {
-    public class Experiment : MonoBehaviour
+    public partial class Experiment : MonoBehaviour
     {
-        public int fps;
-        public float brightness = 0.1f;
+        [Range(0, 10)]
+        public float Speed = 1;
+        [Range(0, 1)]
+        public float Brightness = 0.1f;
+        public int FPS = 30;
+        [SerializeField] private DmxController controller;
 
-        [SerializeField] DmxController controller;
-        List<DmxUniverse> universes = new List<DmxUniverse>();
-        Thread dmxSender;
-
-        public class DmxUniverse
-        {
-            public short Index;
-            public byte[] DmxData;
-
-            public DmxUniverse(short index)
-            {
-                this.Index = index;
-                DmxData = new byte[512];
-            }
-
-            public void SetChannelValue(int channel, float value)
-            {
-                DmxData[channel] = (byte)Mathf.FloorToInt(Mathf.Lerp(0, 255, value));
-            }
-
-            public void Send()
-            {
-                
-            }
-        }
+        private DmxMatrix matrix;
+        private Thread dmxSender;
 
         void Start()
         {
-            universes.Add(new DmxUniverse(0));
-            universes.Add(new DmxUniverse(1));
-            fps = 30;
+            matrix = new DmxMatrix(16, 16);
         }
 
         private void Update()
@@ -47,35 +26,30 @@ namespace Unity_DMX.Scripts
             if (dmxSender == null)
                 SetSendingDMX(true);
 
-            foreach (DmxUniverse universe in universes)
+            Profiler.BeginSample("Filling DmxMatrix");
+            for (int y = 0; y < matrix.Height; y++)
             {
-                for (int i = 0; i < 170; i++)
+                for (int x = 0; x < matrix.Width; x++)
                 {
-                    universe.SetChannelValue(i*3, Mathf.Abs(Mathf.Sin(Time.time + i))*brightness);
-                    universe.SetChannelValue(i*3+1, Mathf.Abs(Mathf.Cos(Time.time + i))*brightness);
-                    universe.SetChannelValue(i*3+2,  Mathf.Abs(Mathf.Sin(Time.time + i)) * brightness);
+                    // Circles red expanding, green contracting
+                    float dist = Vector2.Distance(new Vector2(x, y), new Vector2((matrix.Width-1)/2.0f, (matrix.Height-1)/2.0f));
+                    float time = Time.time * Speed;
+                    matrix.SetLedRGB(x, y, 
+                        (Mathf.Sin(time - dist))*Brightness,
+                        (Mathf.Cos(time * 0.33f + dist))*Brightness,
+                        (Mathf.Sin(time - dist))*Brightness * 0);
+                    
+                    // Twinkle effect
+                    // int ledIndex = x + y * matrix.Width;
+                    // matrix.SetLedRGB(x, y, 
+                    //     Mathf.Abs(Mathf.Sin(Time.time + ledIndex))*Brightness,
+                    //     Mathf.Abs(Mathf.Cos(Time.time + ledIndex))*Brightness,
+                    //     Mathf.Abs(Mathf.Tan(Time.time + ledIndex))*Brightness);
                 }
             }
+            Profiler.EndSample();
         }
 
-        private void OnDisable()
-        {
-            Shutdown();
-        }
-
-        private void Shutdown()
-        {
-            foreach (DmxUniverse universe in universes)
-            {
-                for (int i = 0; i < 512; i++)
-                    universe.SetChannelValue(i, 0);
-                controller.Send(universe.Index, universe.DmxData);
-            }
-            
-            if (dmxSender != null)
-                dmxSender.Abort();
-        }
-        
         public void SetSendingDMX(bool b)
         {
             if (dmxSender != null)
@@ -93,10 +67,22 @@ namespace Unity_DMX.Scripts
         {
             while (true)
             {
-                foreach (DmxUniverse universe in universes)
-                    controller.Send(universe.Index, universe.DmxData);
-                Thread.Sleep(System.Math.Max(1, 1000 / fps));
+                Profiler.BeginSample("Sending Dmx");
+                foreach (DmxUniverse universe in matrix.Universes)
+                    controller.Send(universe.Index, universe.Data);
+                Profiler.EndSample();
+                Thread.Sleep(System.Math.Max(1, 1000 / FPS));
             }
+        }
+
+        private void OnDisable()
+        {
+            matrix.Blank();
+            foreach (DmxUniverse universe in matrix.Universes)
+                controller.Send(universe.Index, universe.Data);
+
+            if (dmxSender != null)
+                dmxSender.Abort();
         }
     }
 }
