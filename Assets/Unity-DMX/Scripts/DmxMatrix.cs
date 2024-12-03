@@ -7,26 +7,32 @@ namespace Unity_DMX.Scripts
     {
         public readonly int Width;
         public readonly int Height;
-        public List<DmxUniverse> Universes = new List<DmxUniverse>();
+        public bool Transpose;
+        public bool Serpentine;
+        public readonly List<DmxUniverse> Universes = new List<DmxUniverse>();
         
-        public DmxMatrix(int width, int height)
+        public DmxMatrix(int _width, int _height)
         {
-            Width = width;
-            Height = height;
-            int universeCount = Mathf.CeilToInt(width * height * 3 / 512f);
+            Width = _width;
+            Height = _height;
+            int universeCount = Mathf.CeilToInt(_width * _height * 3 / 512f);
             for (short i = 0; i < universeCount; i++)
                 Universes.Add(new DmxUniverse (i,512));
         }
         
-        public void SetLedRGB(int x, int y, float r, float g, float b)
+        public void SetLedRGB(int _x, int _y, float _r, float _g, float _b)
         {
+            int x = Transpose ? _y : _x;
+            int y = Transpose ? _x : _y;
+            if (Serpentine)
+                x = y % 2 != 0 ? Width - 1 - x : x;
             int ledIndex = x + y * Width;
             int universe = Mathf.FloorToInt(ledIndex / 170f);
             ledIndex %= 170;
             // DMX is GRB, so these are shuffled
-            Universes[universe].SetChannelValue(ledIndex*3+1, r);
-            Universes[universe].SetChannelValue(ledIndex*3, g);
-            Universes[universe].SetChannelValue(ledIndex*3+2, b);
+            Universes[universe].SetChannelValue(ledIndex*3+1, _r);
+            Universes[universe].SetChannelValue(ledIndex*3, _g);
+            Universes[universe].SetChannelValue(ledIndex*3+2, _b);
         }
 
         public void Blank()
