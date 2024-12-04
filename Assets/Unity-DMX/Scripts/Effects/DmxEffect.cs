@@ -13,11 +13,13 @@ namespace Unity_DMX.Scripts.Effects
 
         public virtual void SetTranspose(bool _transpose)
         {
+            if (Matrix == null) return;
             Matrix.Transpose = _transpose;
         }
 
         public virtual void SetSerpentine(bool _serpentine)
         {
+            if (Matrix == null) return;
             Matrix.Serpentine = _serpentine;
         }
         
@@ -26,13 +28,8 @@ namespace Unity_DMX.Scripts.Effects
         public virtual void Send(DmxController _controller)
         {
             foreach (DmxUniverse universe in Matrix.Universes)
-                _controller.Send(universe.Index, universe.Data);
-        }
-
-        public virtual void Blank(DmxController _controller)
-        {
-            Matrix.Blank();
-            Send(_controller);
+                if (_controller != null)
+                    _controller.Send(universe.Index, universe.Data);
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Unity_DMX.Scripts
             while (true)
             {
                 Profiler.BeginSample("Sending Dmx");
-                if (Effects != null) currentEffect.Send(Controller);
+                if (currentEffect != null) currentEffect.Send(Controller);
                 Profiler.EndSample();
                 Thread.Sleep(System.Math.Max(1, 1000 / FPS));
             }
@@ -78,8 +78,6 @@ namespace Unity_DMX.Scripts
 
         private void OnDisable()
         {
-            if (Effects != null) currentEffect.Blank(Controller);
-
             if (dmxSender != null)
                 dmxSender.Abort();
         }

@@ -87,11 +87,5 @@ namespace Unity_DMX.Scripts.Effects
             foreach (DmxUniverse universe in matrices[Mathf.FloorToInt(playbackTime) % ImageSequence.Count].Universes)
                 _controller.Send(universe.Index, universe.Data);
         }
-
-        public override void Blank(DmxController _controller)
-        {
-            matrices[Mathf.FloorToInt(playbackTime) % ImageSequence.Count].Blank();
-            Send(_controller);
-        }
     }
 }

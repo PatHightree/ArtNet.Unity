@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Linq;
@@ -17,12 +18,14 @@ public class DmxController : MonoBehaviour
     [Header("dmx devices")]
     public UniverseDevices[] universes;
     public bool isServer;
+    public bool blankOnShutdown = true;
 
     ArtNetSocket artnet;
     [Header("send/recieved DMX data for debug")]
     [SerializeField] ArtNetDmxPacket latestReceivedDMX;
     [SerializeField] ArtNetDmxPacket dmxToSend;
     byte[] _dmxData;
+    HashSet<short> usedUniverses = new HashSet<short>();
 
     Dictionary<int, byte[]> dmxDataMap;
 
@@ -43,6 +46,7 @@ public class DmxController : MonoBehaviour
             artnet.Send(dmxToSend);
         else
             artnet.Send(dmxToSend, remote);
+        if (blankOnShutdown) usedUniverses.Add(universe);
     }
 
     private void OnValidate()
@@ -85,8 +89,11 @@ public class DmxController : MonoBehaviour
         dmxDataMap = new Dictionary<int, byte[]>();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
+        if (blankOnShutdown)
+            foreach (short universe in usedUniverses)
+                Send(universe, new byte[512]);
         artnet.Close();
     }
 
