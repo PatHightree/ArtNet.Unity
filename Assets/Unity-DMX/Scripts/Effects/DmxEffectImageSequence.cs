@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -7,7 +8,7 @@ namespace Unity_DMX.Scripts.Effects
     [CreateAssetMenu(fileName = "Image Sequence Effect", menuName = "Cubicle/Image Sequence Effect", order = 1)]
     public class DmxEffectImageSequence : DmxEffect
     {
-        public List<TextAsset> ImageSequence;
+        public List<Texture2D> ImageSequence;
         public float Brightness = 0.01f;
         public float SpeedMultiplier = 1.0f;
         
@@ -23,10 +24,21 @@ namespace Unity_DMX.Scripts.Effects
             serpentine = _serpentine;
             transpose = _transpose;
             matrices = new List<DmxMatrix>();
-            foreach (TextAsset imageAsset in ImageSequence)
+            foreach (Texture2D imageAsset in ImageSequence)
             {
-                Texture2D tex = new Texture2D(_width, 16);
-                ImageConversion.LoadImage(tex, imageAsset.bytes);
+                string assetPath = AssetDatabase.GetAssetPath(imageAsset);
+                Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+                if (!tex.isReadable)
+                {
+                    var tImporter = AssetImporter.GetAtPath( assetPath ) as TextureImporter;
+                    if ( tImporter != null)
+                    {
+                        tImporter.textureType = TextureImporterType.Default;
+                        tImporter.isReadable = true;
+                        AssetDatabase.ImportAsset( assetPath );
+                        AssetDatabase.Refresh();
+                    }
+                }
                 DmxMatrix imageMatrix = new DmxMatrix(_width, _height);
                 imageMatrix.Transpose = _transpose;
                 imageMatrix.Serpentine = _serpentine;
@@ -50,13 +62,15 @@ namespace Unity_DMX.Scripts.Effects
         public override void SetTranspose(bool _transpose)
         {
             transpose = _transpose;
-            if (matrices != null) Initialize(matrices[0].Width, matrices[0].Height, transpose, serpentine);
+            if (matrices != null && matrices[0] != null) 
+                Initialize(matrices[0].Width, matrices[0].Height, transpose, serpentine);
         }
 
         public override void SetSerpentine(bool _serpentine)
         {
             serpentine = _serpentine;
-            if (matrices != null) Initialize(matrices[0].Width, matrices[0].Height, transpose, serpentine);
+            if (matrices != null && matrices[0] != null) 
+                Initialize(matrices[0].Width, matrices[0].Height, transpose, serpentine);
         }
 
         public override void Step(float _speed, float _brightness)
