@@ -7,6 +7,8 @@ namespace Unity_DMX.Scripts
     {
         public readonly int Width;
         public readonly int Height;
+        public bool FlipX;
+        public bool FlipY;
         public bool Transpose;
         public bool Serpentine;
         public readonly List<DmxUniverse> Universes = new List<DmxUniverse>();
@@ -24,6 +26,8 @@ namespace Unity_DMX.Scripts
         {
             int x = Transpose ? _y : _x;
             int y = Transpose ? _x : _y;
+            x = FlipX ? Width - 1 - x : x;
+            y = FlipY ? Height - 1 - y : y;
             if (Serpentine)
                 x = y % 2 != 0 ? Width - 1 - x : x;
             int ledIndex = x + y * Width;

@@ -14,15 +14,15 @@ namespace Unity_DMX.Scripts.Effects
         
         private float playbackTime;
         private List<DmxMatrix> matrices;
+        private bool flipX;
+        private bool flipY;
         private bool transpose;
         private bool serpentine;
         private bool initializing;
 
-        public override void Initialize(int _width, int _height, bool _transpose, bool _serpentine)
+        public override void Initialize(int _width, int _height)
         {
             initializing = true;
-            serpentine = _serpentine;
-            transpose = _transpose;
             matrices = new List<DmxMatrix>();
             foreach (Texture2D imageAsset in ImageSequence)
             {
@@ -40,8 +40,10 @@ namespace Unity_DMX.Scripts.Effects
                     }
                 }
                 DmxMatrix imageMatrix = new DmxMatrix(_width, _height);
-                imageMatrix.Transpose = _transpose;
-                imageMatrix.Serpentine = _serpentine;
+                imageMatrix.FlipX = flipX;
+                imageMatrix.FlipY = flipY;
+                imageMatrix.Transpose = transpose;
+                imageMatrix.Serpentine = serpentine;
                 Color[] colors = tex.GetPixels();
                 for (int y = 0; y < _height; y++)
                 {
@@ -59,18 +61,14 @@ namespace Unity_DMX.Scripts.Effects
             initializing = false;
         }
 
-        public override void SetTranspose(bool _transpose)
+        public override void SetGeometry(bool _flipX, bool _flipY, bool _transpose, bool _serpentine)
         {
+            flipX = _flipX;
+            flipY = _flipY;
             transpose = _transpose;
-            if (matrices != null && matrices[0] != null) 
-                Initialize(matrices[0].Width, matrices[0].Height, transpose, serpentine);
-        }
-
-        public override void SetSerpentine(bool _serpentine)
-        {
             serpentine = _serpentine;
             if (matrices != null && matrices[0] != null) 
-                Initialize(matrices[0].Width, matrices[0].Height, transpose, serpentine);
+                Initialize(matrices[0].Width, matrices[0].Height);
         }
 
         public override void Step(float _speed, float _brightness)

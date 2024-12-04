@@ -15,6 +15,10 @@ namespace Unity_DMX.Scripts
         public float Brightness = 0.1f;
         public int FPS = 30;
         [SerializeField] private DmxController Controller;
+        public int Width = 20;
+        public int Height = 20;
+        public bool FlipX;
+        public bool FlipY;
         public bool Transpose;
         public bool Serpentine;
 
@@ -27,7 +31,7 @@ namespace Unity_DMX.Scripts
             if (Effects != null)
             {
                 currentEffect = Effects.First();
-                currentEffect.Initialize(16, 16, Transpose, Serpentine);
+                currentEffect.Initialize(Width, Height);
             }
             else
                 Debug.LogWarning("No effect attached to " + gameObject.name);
@@ -46,10 +50,11 @@ namespace Unity_DMX.Scripts
             if (Effects.First() != currentEffect)
             {
                 currentEffect = Effects.First();
-                currentEffect.Initialize(16, 16, Transpose, Serpentine);
+                currentEffect.SetGeometry(FlipX, FlipY, Transpose, Serpentine);
+                currentEffect.Initialize(Width, Height);
             }
-            currentEffect.SetTranspose(Transpose);
-            currentEffect.SetSerpentine(Serpentine);
+            else
+                currentEffect.SetGeometry(FlipX, FlipY, Transpose, Serpentine);
         }
 
         public void SetSendingDMX(bool b)
