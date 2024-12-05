@@ -14,15 +14,10 @@ namespace Unity_DMX.Scripts.Effects
         
         private float playbackTime;
         private List<DmxMatrix> matrices;
-        private bool flipX;
-        private bool flipY;
-        private bool transpose;
-        private bool serpentine;
-        private bool initializing;
 
         public override void Initialize(int _width, int _height)
         {
-            initializing = true;
+            Initializing = true;
             matrices = new List<DmxMatrix>();
             foreach (Texture2D imageAsset in ImageSequence)
             {
@@ -40,10 +35,10 @@ namespace Unity_DMX.Scripts.Effects
                     }
                 }
                 DmxMatrix imageMatrix = new DmxMatrix(_width, _height);
-                imageMatrix.FlipX = flipX;
-                imageMatrix.FlipY = flipY;
-                imageMatrix.Transpose = transpose;
-                imageMatrix.Serpentine = serpentine;
+                imageMatrix.FlipX = FlipX;
+                imageMatrix.FlipY = FlipY;
+                imageMatrix.Transpose = Transpose;
+                imageMatrix.Serpentine = Serpentine;
                 Color[] colors = tex.GetPixels();
                 for (int y = 0; y < _height; y++)
                 {
@@ -58,17 +53,16 @@ namespace Unity_DMX.Scripts.Effects
                 }
                 matrices.Add(imageMatrix);
             }
-            initializing = false;
+            Initializing = false;
         }
 
         public override void SetGeometry(bool _flipX, bool _flipY, bool _transpose, bool _serpentine)
         {
-            flipX = _flipX;
-            flipY = _flipY;
-            transpose = _transpose;
-            serpentine = _serpentine;
-            if (matrices != null && matrices[0] != null) 
-                Initialize(matrices[0].Width, matrices[0].Height);
+            FlipX = _flipX;
+            FlipY = _flipY;
+            Transpose = _transpose;
+            Serpentine = _serpentine;
+            Initialize(Width, Height);
         }
 
         public override void Step(float _speed, float _brightness)
@@ -80,7 +74,7 @@ namespace Unity_DMX.Scripts.Effects
 
         public override void Send(DmxController _controller)
         {
-            if (initializing) return;
+            if (Initializing) return;
             
             foreach (DmxUniverse universe in matrices[Mathf.FloorToInt(playbackTime) % ImageSequence.Count].Universes)
                 _controller.Send(universe.Index, universe.Data);

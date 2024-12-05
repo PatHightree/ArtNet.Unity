@@ -4,10 +4,19 @@ namespace Unity_DMX.Scripts.Effects
 {
     public abstract class DmxEffect : ScriptableObject
     {
+        protected int Width;
+        protected int Height;
         protected DmxMatrix Matrix;
-        
+        protected bool FlipX;
+        protected bool FlipY;
+        protected bool Transpose;
+        protected bool Serpentine;
+        protected bool Initializing;
+
         public virtual void Initialize(int _width, int _height)
         {
+            Width = _width;
+            Height = _height;
             Matrix = new DmxMatrix(_width, _height);
         }
 

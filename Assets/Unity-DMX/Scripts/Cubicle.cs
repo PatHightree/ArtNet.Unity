@@ -31,6 +31,7 @@ namespace Unity_DMX.Scripts
             if (Effects != null)
             {
                 currentEffect = Effects.First();
+                currentEffect.SetGeometry(FlipX, FlipY, Transpose, Serpentine);
                 currentEffect.Initialize(Width, Height);
             }
             else

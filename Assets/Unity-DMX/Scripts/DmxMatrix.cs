@@ -24,13 +24,11 @@ namespace Unity_DMX.Scripts
         
         public void SetLedRGB(int _x, int _y, float _r, float _g, float _b)
         {
-            int x = Transpose ? _y : _x;
-            int y = Transpose ? _x : _y;
-            x = FlipX ? Width - 1 - x : x;
-            y = FlipY ? Height - 1 - y : y;
+            int x = FlipX ? Width - 1 - _x : _x;
+            int y = FlipY ? Height - 1 - _y : _y;
             if (Serpentine)
                 x = y % 2 != 0 ? Width - 1 - x : x;
-            int ledIndex = x + y * Width;
+            int ledIndex = Transpose ? y + x * Height :  x + y * Width;
             int universe = Mathf.FloorToInt(ledIndex / 170f);
             ledIndex %= 170;
             // DMX is GRB, so these are shuffled
