@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7141e77a38e4e4db6f99a3c6a94bbb0, type: 3}
+  m_Name: Matrix panel
+  m_EditorClassIdentifier: 
+  Width: 16
+  Height: 16
+  Brightness: 0.1
+  FlipX: 0
+  FlipY: 0
+  Transpose: 0
+  Serpentine: 1
+  ColorOrder: 1

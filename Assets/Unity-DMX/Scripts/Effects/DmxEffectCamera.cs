@@ -2,22 +2,25 @@
 
 namespace Unity_DMX.Scripts.Effects
 {
-    [CreateAssetMenu(fileName = "Camera Effect", menuName = "Cubicle/Camera Effect", order = 1)]
+    /// <summary>
+    /// Effect that displays the view of a scene camera in a DmxMatrix.
+    /// </summary>
+    [CreateAssetMenu(fileName = "Camera Effect", menuName = Project.ProjectName + "/Camera Effect", order = 1)]
     public class DmxEffectCamera : DmxEffect
     {
         private RenderTexture _renderTexture;
         private Texture2D _texture;
 
-        public override void Initialize(int _width, int _height)
+        public override void Initialize(DisplayDescriptor _display)
         {
-            base.Initialize(_width, _height);
+            base.Initialize(_display);
             
-            _renderTexture = new RenderTexture(_width, _height,  8, RenderTextureFormat.ARGB32);
-            _texture = new Texture2D(_width, _height, TextureFormat.ARGB32, false);
+            _renderTexture = new RenderTexture(_display.Width, _display.Height,  8, RenderTextureFormat.ARGB32);
+            _texture = new Texture2D(_display.Width, _display.Height, TextureFormat.ARGB32, false);
             if (Camera.main != null) Camera.main.targetTexture = _renderTexture;
         }
 
-        public override void Step(float _speed, float _brightness)
+        public override void Step(float _speed)
         {
             // Transfer camera RT to Texture2D
             RenderTexture currentActiveRT = RenderTexture.active;
@@ -27,15 +30,15 @@ namespace Unity_DMX.Scripts.Effects
             
             // Transfer Texture2D to DmxMatrix
             Color[] colors = _texture.GetPixels();
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < Display.Height; y++)
             {
-                for (int x = 0; x < Width; x++)
+                for (int x = 0; x < Display.Width; x++)
                 {
-                    int ledIndex = x + y * Width;
+                    int ledIndex = x + y * Display.Width;
                     Matrix.SetLedRGB(x, y, 
-                        colors[ledIndex].r*_brightness, 
-                        colors[ledIndex].g*_brightness, 
-                        colors[ledIndex].b*_brightness);
+                        colors[ledIndex].r, 
+                        colors[ledIndex].g, 
+                        colors[ledIndex].b);
                 }
             }
 

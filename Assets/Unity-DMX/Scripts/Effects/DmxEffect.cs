@@ -1,35 +1,31 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Unity_DMX.Scripts.Effects
 {
+    /// <summary>
+    /// Base class for visual effects which can draw into DmxMatrices to send over Artnet.
+    /// </summary>
     public abstract class DmxEffect : ScriptableObject
     {
-        protected int Width;
-        protected int Height;
+        public Action IsDirty;
+
         protected DmxMatrix Matrix;
-        protected bool FlipX;
-        protected bool FlipY;
-        protected bool Transpose;
-        protected bool Serpentine;
         protected bool Initializing;
+        protected DisplayDescriptor Display;
 
-        public virtual void Initialize(int _width, int _height)
+        private void OnValidate()
         {
-            Width = _width;
-            Height = _height;
-            Matrix = new DmxMatrix(_width, _height);
+            IsDirty?.Invoke();
         }
 
-        public virtual void SetGeometry(bool _flipX, bool _flipY, bool _transpose, bool _serpentine)
+        public virtual void Initialize(DisplayDescriptor _display)
         {
-            if (Matrix == null) return;
-            Matrix.FlipX = _flipX;
-            Matrix.FlipY = _flipY;
-            Matrix.Transpose = _transpose;
-            Matrix.Serpentine = _serpentine;
+            Display = _display;
+            Matrix = new DmxMatrix(_display);
         }
 
-        public abstract void Step(float _speed, float _brightness);
+        public abstract void Step(float _speed);
 
         public virtual void Send(DmxController _controller)
         {

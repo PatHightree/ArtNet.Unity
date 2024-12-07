@@ -3,23 +3,26 @@ using UnityEngine.Profiling;
 
 namespace Unity_DMX.Scripts.Effects
 {
-    [CreateAssetMenu(fileName = "Circle Effect", menuName = "Cubicle/Circle Effect", order = 1)]
+    /// <summary>
+    /// Procedural effect of expanding and contracting circles
+    /// </summary>
+    [CreateAssetMenu(fileName = "Circle Effect", menuName = Project.ProjectName + "/Circle Effect", order = 1)]
     public class DmxEffectCircles : DmxEffect
     {
-        public override void Step(float _speed, float _brightness)
+        public override void Step(float _speed)
         {
             Profiler.BeginSample("Filling DmxMatrix");
-            for (int y = 0; y < Matrix.Height; y++)
+            for (int y = 0; y < Display.Height; y++)
             {
-                for (int x = 0; x < Matrix.Width; x++)
+                for (int x = 0; x < Display.Width; x++)
                 {
                     // Circles red expanding, green contracting
-                    float dist = Vector2.Distance(new Vector2(x, y), new Vector2((Matrix.Width-1)/2.0f, (Matrix.Height-1)/2.0f));
+                    float dist = Vector2.Distance(new Vector2(x, y), new Vector2((Display.Width-1)/2.0f, (Display.Height-1)/2.0f));
                     float time = Time.time * _speed;
                     Matrix.SetLedRGB(x, y, 
-                        (Mathf.Sin(time - dist))*_brightness,
-                        (Mathf.Cos(time * 0.33f + dist))*_brightness,
-                        (Mathf.Sin(time - dist))*_brightness * 0);
+                        (Mathf.Sin(time - dist)),
+                        (Mathf.Cos(time * 0.33f + dist)),
+                        (Mathf.Sin(time - dist)) * 0);
                 }
             }
             Profiler.EndSample();
