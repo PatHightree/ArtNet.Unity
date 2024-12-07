@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Test image
   m_EditorClassIdentifier: 
   ImageSequence:
-  - {fileID: 2800000, guid: 30a0b2e08aa622a45851b0d2d4bb2b82, type: 3}
-  Brightness: 0.01
+  - {fileID: 2800000, guid: ffe47a32f8e35b24f9a99a871fb79d44, type: 3}
+  BrightnessMultiplier: 1
   SpeedMultiplier: 1

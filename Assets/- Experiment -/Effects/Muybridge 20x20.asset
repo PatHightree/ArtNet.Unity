@@ -13,21 +13,21 @@ MonoBehaviour:
   m_Name: Muybridge 20x20
   m_EditorClassIdentifier: 
   ImageSequence:
-  - {fileID: 2800000, guid: fb8061cc072a48d4a94b38d959f9f49b, type: 3}
-  - {fileID: 2800000, guid: 712ca063454ee8046b90042d14238f1e, type: 3}
-  - {fileID: 2800000, guid: f387be31938c22c449e849441e6b0734, type: 3}
-  - {fileID: 2800000, guid: a7f5233562918f3419c4d07dc0552cdd, type: 3}
-  - {fileID: 2800000, guid: be324afb84e109847bb2524830f3d435, type: 3}
-  - {fileID: 2800000, guid: 428d82fe328c2f74fa1ecb27e3aeb21e, type: 3}
-  - {fileID: 2800000, guid: 61923c28dbaf84d45b7f22887706fc23, type: 3}
-  - {fileID: 2800000, guid: 67f71844c864a304b88837d7e0585571, type: 3}
-  - {fileID: 2800000, guid: bcb74794f253e9a4d9e4bd28fc2b9cae, type: 3}
-  - {fileID: 2800000, guid: 5f15fd4852c450f418d076b3c6631581, type: 3}
-  - {fileID: 2800000, guid: 9732d0ee46dea864caf6ac95b929f18d, type: 3}
-  - {fileID: 2800000, guid: cfce65463d2f9c84d8161fd3d356212d, type: 3}
-  - {fileID: 2800000, guid: 600e55b3e323ec548a41cdd4d9404de0, type: 3}
-  - {fileID: 2800000, guid: 95d7a98f4f3f1e648b9249a41d428acd, type: 3}
-  - {fileID: 2800000, guid: 7d3c0551d80c9a348aca94d616a1f33c, type: 3}
-  - {fileID: 2800000, guid: 6f54e7c379ae6d1409fbbad64b299ad6, type: 3}
-  Brightness: 0.05
+  - {fileID: 2800000, guid: c681c9ee1a4d4d846a41063725d9c78c, type: 3}
+  - {fileID: 2800000, guid: 218f03b3e6f79634490eba63561de799, type: 3}
+  - {fileID: 2800000, guid: 9bbdac741084145469de3a94fe18e025, type: 3}
+  - {fileID: 2800000, guid: b98e44d9523559746ad377bffbf1197c, type: 3}
+  - {fileID: 2800000, guid: 184f0c047a18f534aa881727ae9dd92e, type: 3}
+  - {fileID: 2800000, guid: ffae0d73f5a3e2245bdd26d0e6ca8b1c, type: 3}
+  - {fileID: 2800000, guid: 32f9345e564eb8e47b941a865d1b7f70, type: 3}
+  - {fileID: 2800000, guid: 7af800082f337844082af19cd00bc0c1, type: 3}
+  - {fileID: 2800000, guid: 63f50ce4947e8e24f85f893ceb5399e7, type: 3}
+  - {fileID: 2800000, guid: 42102e20c14b53c4b9b0b2e4c6e6ffdf, type: 3}
+  - {fileID: 2800000, guid: e43bb37647bd6784ea5aedb1abf77a55, type: 3}
+  - {fileID: 2800000, guid: c003a6811ae8b254e9d674d69fc062bd, type: 3}
+  - {fileID: 2800000, guid: eeb114b769c9d2b40897cd71c1b7ea42, type: 3}
+  - {fileID: 2800000, guid: 0ca9812176d17ab488872b5e7996cb27, type: 3}
+  - {fileID: 2800000, guid: fc448eb6790681f4991594b7c111ec26, type: 3}
+  - {fileID: 2800000, guid: d7d4f695e81db9047bf484f0f421a73c, type: 3}
+  BrightnessMultiplier: 1
   SpeedMultiplier: 2
